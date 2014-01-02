@@ -1,5 +1,7 @@
 set :stage, :production
 
+set :rack_env, 'production'
+
 set :ip, '162.243.90.117'
 set :host, "#{fetch :user}@#{fetch :ip}"
 

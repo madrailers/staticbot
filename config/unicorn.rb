@@ -1,7 +1,7 @@
 # define paths and filenames
 deploy_to = "/var/www/apps/staticbot"
 sinatra_root = "#{deploy_to}/current"
-pid_file = "#{deploy_to}/shared/pids/unicorn.pid"
+pid_file = "#{deploy_to}/shared/unicorn.pid"
 socket_file= "#{deploy_to}/shared/unicorn.sock"
 log_file = "#{sinatra_root}/log/unicorn.log"
 err_log = "#{sinatra_root}/log/unicorn_error.log"

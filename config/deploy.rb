@@ -8,7 +8,8 @@ set :application, 'staticbot'
 set :repo_url, 'git@github.com:madrailers/staticbot.git'
 
 set :deploy_to, "/var/www/apps/#{fetch :application}"
-set :unicorn_pid, "#{fetch :deploy_to}/shared/pids/unicorn.pid"
+set :unicorn_pid, "#{fetch :deploy_to}/shared/unicorn.pid"
+set :unicorn_conf, "#{fetch :deploy_to}/current/config/unicorn.rb"
 
 desc 'Check that we can access everything'
 task :check_write_permissions do
@@ -21,30 +22,30 @@ task :check_write_permissions do
   end
 end
 
-# namespace :deploy do
-#   task :restart do
-#     on roles(:app) do
-#       if test("[ -f #{fetch :unicorn_pid} ]")
-#         info "Sending USR2 to Unicorn"
-#         execute "kill -USR2 `cat #{fetch :unicorn_pid}`"
-#       else
-#         within current_path do
-#           info "Starting Unicorn"
-#           execute "bundle config"
-#         end
-#       end
-#     end
-#   end
-# 
-#   task :start do
-#     on roles(:app) do
-#       within current_path do
-#         info "Starting Unicorn"
-#         execute "bundle config"
-#       end
-#     end
-#   end
-# end
+namespace :deploy do
+  task :restart do
+    on roles(:app) do
+      if test("[ -f #{fetch :unicorn_pid} ]")
+        info "Sending USR2 to Unicorn"
+        execute "kill -USR2 `cat #{fetch :unicorn_pid}`"
+      else
+        within current_path do
+          info "Starting Unicorn"
+          execute :bundle, "exec unicorn -c #{fetch(:unicorn_conf)} -E #{fetch(:rack_env)} -D"
+        end
+      end
+    end
+  end
+
+  task :start do
+    on roles(:app) do
+      within current_path do
+        info "Starting Unicorn"
+        execute :bundle, "exec unicorn -c #{fetch(:unicorn_conf)} -E #{fetch(:rack_env)} -D"
+      end
+    end
+  end
+end
 
 =begin
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path']))
@@ -75,12 +76,12 @@ set :host, "#{fetch(:user)}@#{fetch(:ip)}"
 role :web, fetch(:host)
 role :app, fetch(:host)
 
-set :rails_env, :production
+set :rack_env, :production
 
 # Where will it be located on a server?
 set :deploy_to, "/home/buildbot/apps/#{fetch(:application)}"
 set :unicorn_conf, "#{fetch(:deploy_to)}/current/config/unicorn.rb"
-set :unicorn_pid, "#{fetch(:deploy_to)}/shared/pids/unicorn.pid"
+set :unicorn_pid, "#{fetch(:deploy_to)}/shared/unicorn.pid"
 
 # Unicorn control tasks
 namespace :deploy do
@@ -100,7 +101,7 @@ namespace :deploy do
   task :start do
     on roles(:web) do |host|
       info "Starting Unicorn"
-      execute "cd #{fetch(:deploy_to)}/current && bundle exec unicorn -c #{fetch(:unicorn_conf)} -E #{fetch(:rails_env)} -D"
+      execute "cd #{fetch(:deploy_to)}/current && bundle exec unicorn -c #{fetch(:unicorn_conf)} -E #{fetch(:rack_env)} -D"
     end
   end
 
