@@ -1,5 +1,10 @@
 set :stage, :production
 
+set :ip, '162.243.90.117'
+set :host, "#{fetch :user}@#{fetch :ip}"
+
+server fetch(:host), roles: [:web, :app]
+
 # Simple Role Syntax
 # ==================
 # Supports bulk-adding hosts to roles, the primary

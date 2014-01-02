@@ -1,0 +1,2 @@
+require './staticbot'
+run Staticbot
