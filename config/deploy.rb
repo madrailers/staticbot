@@ -2,7 +2,7 @@ set :user, 'buildbot'
 set :group, fetch(:user)
 set :runner, fetch(:user)
 
-set :chruby_ruby, 'ruby-2.1.0'
+set :chruby_ruby, 'ruby-2.0.0'
 
 set :application, 'staticbot'
 set :repo_url, 'git@github.com:madrailers/staticbot.git'
